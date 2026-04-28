@@ -176,7 +176,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://cloutorcancel.live", "https://www.cloutorcancel.live","https://clout-or-cancel.vercel.app/"],
+    allow_origins=[
+        "https://cloutorcancel.live",
+        "https://www.cloutorcancel.live",
+        "https://clout-or-cancel.vercel.app"   # ← no trailing slash
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
