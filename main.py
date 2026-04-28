@@ -177,11 +177,14 @@ from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://clout-or-cancel-6hqpb8w90-sanecodeguys-projects.vercel.app",
         "https://cloutorcancel.live",
         "https://www.cloutorcancel.live",
-        "https://clout-or-cancel.vercel.app"   # ← no trailing slash
+        # For local development
+        "http://localhost:3000",
+        "http://localhost:5173",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],          # Allows OPTIONS, POST, GET, etc.
+    allow_headers=["*"],          # Allows Content-Type and others
 )
