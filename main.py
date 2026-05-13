@@ -1,8 +1,3 @@
-"""
-Clout or Cancel — FastAPI Backend
-Run: uvicorn main:app --reload --port 8000
-"""
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,7 +8,6 @@ from scipy.sparse import hstack, csr_matrix
 from typing import Optional
 import time
 
-# ── Load artifacts ────────────────────────────────────────────────────────────
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "model")
 
 def load(name):
@@ -22,9 +16,8 @@ def load(name):
 
 tfidf          = load("tfidf_vectorizer.pkl")
 lr             = load("logistic_regression.pkl")
-EXTRA_FEATURES = load("extra_features.pkl")   # list of feature names
+EXTRA_FEATURES = load("extra_features.pkl")   
 
-# ── App setup ─────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="Clout or Cancel API",
     description="X.com tweet sentiment analysis — Positive / Negative",
@@ -33,13 +26,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # tighten in production
+    allow_origins=["*"],       
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
 def extract_features(text: str) -> list:
     """
     Compute the same extra features used during training.
@@ -65,17 +57,17 @@ def extract_features(text: str) -> list:
 
 def clean_text(text: str) -> str:
     """Light cleaning — mirrors preprocessing pipeline."""
-    text = re.sub(r'https?://\S+', '', text)         # remove URLs
-    text = re.sub(r'@\w+', '', text)                  # remove mentions
-    text = re.sub(r'[^a-zA-Z\s]', '', text)           # keep only alpha
-    text = re.sub(r'\s+', ' ', text).strip().lower()  # normalise whitespace
+    text = re.sub(r'https?://\S+', '', text)         
+    text = re.sub(r'@\w+', '', text)                  
+    text = re.sub(r'[^a-zA-Z\s]', '', text)          
+    text = re.sub(r'\s+', ' ', text).strip().lower()  
     return text
 
 
 def classify(text: str) -> dict:
     cleaned = clean_text(text)
     vec     = tfidf.transform([cleaned])
-    extra   = csr_matrix([extract_features(text)])    # raw text for feature extraction
+    extra   = csr_matrix([extract_features(text)])    
     X       = hstack([vec, extra])
 
     pred    = int(lr.predict(X)[0])
@@ -83,7 +75,7 @@ def classify(text: str) -> dict:
     neg_p   = round(float(probs[0]), 4)
     pos_p   = round(float(probs[1]), 4)
 
-    # Clout / Cancel risk score (0–100)
+    
     cancel_risk = round(neg_p * 100, 1)
     clout_score = round(pos_p * 100, 1)
 
@@ -99,7 +91,7 @@ def classify(text: str) -> dict:
         "probabilities": {"negative": neg_p, "positive": pos_p},
     }
 
-# ── Schemas ───────────────────────────────────────────────────────────────────
+
 
 class AnalyseRequest(BaseModel):
     tweet: str
@@ -113,13 +105,9 @@ class AnalyseRequest(BaseModel):
 class BatchRequest(BaseModel):
     tweets: list[str]
 
-
-# ── Routes ────────────────────────────────────────────────────────────────────
-
 @app.get("/")
 def root():
     return {"status": "ok", "message": "Clout or Cancel API is live 🚀"}
-
 
 @app.get("/health")
 def health():
@@ -159,7 +147,7 @@ def batch_analyse(req: BatchRequest):
             continue
         results.append({"tweet": tweet, **classify(tweet)})
 
-    # Aggregate stats
+  
     labels     = [r["label"] for r in results]
     pos_count  = labels.count("positive")
     neg_count  = labels.count("negative")
@@ -180,11 +168,11 @@ app.add_middleware(
         "https://clout-or-cancel-6hqpb8w90-sanecodeguys-projects.vercel.app",
         "https://cloutorcancel.live",
         "https://www.cloutorcancel.live",
-        # For local development
+       
         "http://localhost:3000",
         "http://localhost:5173",
     ],
     allow_credentials=True,
-    allow_methods=["*"],          # Allows OPTIONS, POST, GET, etc.
-    allow_headers=["*"],          # Allows Content-Type and others
+    allow_methods=["*"],          
+    allow_headers=["*"],      
 )
