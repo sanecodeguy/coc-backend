@@ -1,7 +1,6 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Syne&weight=700&size=36&pause=0&color=FFFFFF&center=true&vCenter=true&repeat=false&width=480&height=60&lines=Clout+or+Cancel" alt="Clout or Cancel" />
-
+  # Clout or Cancel
 <br/>
 
 ![Python](https://img.shields.io/badge/Python-%233776AB?style=for-the-badge&logo=python&logoColor=white)
